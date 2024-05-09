@@ -1,2 +1,1 @@
-# personaldummy2
-My Personal Dummy project
+# Rock and stone
