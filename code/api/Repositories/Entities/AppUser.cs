@@ -9,9 +9,8 @@ using System.Threading.Tasks;
 
 namespace Repositories.Entities
 {
-    public class User : IdentityUser 
-    { 
- 
+    public class AppUser : IdentityUser 
+    {
         public string FullName { get; set; } = string.Empty;
 
 
@@ -24,5 +23,6 @@ namespace Repositories.Entities
         public string JobPosition { get; set; } = string.Empty;
 
         public int Salary { get; set; }
+
     }
 }

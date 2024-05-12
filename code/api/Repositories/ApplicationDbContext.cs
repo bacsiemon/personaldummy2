@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repositories.Entities;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Repositories
 {
-    public class ApplicationDbContext : IdentityDbContext<User>
+    public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
         public ApplicationDbContext()
         {
@@ -43,7 +44,29 @@ namespace Repositories
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            List<IdentityRole> roles = new()
+            {
+                new IdentityRole()
+                {
+                    Name = "SuperUser",
+                    NormalizedName = "SUPERUSER"
+                },
 
+                new IdentityRole()
+                {
+                    Name = "HumanResource",
+                    NormalizedName = "HUMANRESOURCE"
+                },
+                new IdentityRole()
+                {
+                    Name = "Employee",
+                    NormalizedName = "EMPLOYEE"
+                }
+
+
+            };
+
+            builder.Entity<IdentityRole>().HasData(roles);
         }
 
     }
