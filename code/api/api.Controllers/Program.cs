@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Repositories;
 using Repositories.Entities;
+using Services.JWT;
+using Services.JWT.Impl;
 
 namespace api.Controllers
 {
@@ -22,6 +25,24 @@ namespace api.Controllers
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            var MyAllowSpecificOrigins = "api";
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                  policy =>
+                                  {
+                                      policy.WithOrigins("localhost:5500",
+                                                          "localhost:5500");
+                                      policy.AllowAnyHeader();
+                                      policy.AllowAnyMethod();
+                                      policy.AllowAnyOrigin();
+                                  });
+            });
+
+            builder.Services.AddScoped<ITokenService, TokenService>();
+
+            
+
             builder.Services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -36,7 +57,33 @@ namespace api.Controllers
                 options.Password.RequireNonAlphanumeric = false;
             }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-
+            builder.Services.AddSwaggerGen(option =>
+            {
+                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+            });
 
             builder.Services.AddAuthentication(options =>
             {
@@ -66,6 +113,7 @@ namespace api.Controllers
                 app.UseSwaggerUI();
             }
 
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseHttpsRedirection();
             app.UseAuthentication();
 
