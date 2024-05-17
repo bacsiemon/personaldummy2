@@ -14,6 +14,7 @@ namespace api.Controllers.Dtos.AppUserDtos
         [EmailAddress]
         public string Email { get; set; }
 
+        [StringLength(32)]
         public string PrivateKey { get; set; } = string.Empty;
     }
 }

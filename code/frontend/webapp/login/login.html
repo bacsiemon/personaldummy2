@@ -6,13 +6,21 @@
   </head>
   <body>
     <form id="loginForm">
-      <label for="username">Username:</label><br>
-      <input type="text" id="username" name="username"><br>
-      <label for="password">Password:</label><br>
-      <input type="password" id="password" name="password"><br>
-      <input type="submit" value="Log In">
-    </form>
+      <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username"><br>
+      </div>
+      
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password"><br>
+      </div>
 
+      <input type="submit" value="Log In"><br/> 
+      <p id="errormessage"></p>
+      <a href="../register/register.html">Click here to register</a>
+    </form>
+    
     <script src="js/login.js"></script>
   </body>
 </html>

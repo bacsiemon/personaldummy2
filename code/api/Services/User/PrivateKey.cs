@@ -1,13 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace api.Controllers.Dtos
+namespace Services.User
 {
     public class PrivateKey
     {
-        [StringLength(32)]
+        
         public string SU { get; set; } = string.Empty;
 
-        [StringLength(32)]
         public string HR { get; set; } = string.Empty;
+
+        public string EM { get; set; } = string.Empty;
     }
 }

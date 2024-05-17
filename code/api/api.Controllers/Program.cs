@@ -9,6 +9,8 @@ using Repositories;
 using Repositories.Entities;
 using Services.JWT;
 using Services.JWT.Impl;
+using Services.User;
+using Services.User.Impl;
 
 namespace api.Controllers
 {
@@ -25,84 +27,25 @@ namespace api.Controllers
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var MyAllowSpecificOrigins = "api";
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  policy =>
-                                  {
-                                      policy.WithOrigins("localhost:5500",
-                                                          "localhost:5500");
-                                      policy.AllowAnyHeader();
-                                      policy.AllowAnyMethod();
-                                      policy.AllowAnyOrigin();
-                                  });
-            });
-
+           
             builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
-            
+            // cors
+            var MyAllowSpecificOrigins = "api";
+            ServiceConfig.ConfigureCors(builder, MyAllowSpecificOrigins);
 
-            builder.Services.AddControllers().AddNewtonsoftJson(options =>
-            {
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            });
-            builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionString:DefaultConnection")));
+            ServiceConfig.ConfigureNewtonsoftJson(builder);
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-            {
-                options.Password.RequireDigit = true;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
+            ServiceConfig.ConfigureDbContext(builder);
 
-            builder.Services.AddSwaggerGen(option =>
-            {
-                option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
-                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please enter a valid token",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.Http,
-                    BearerFormat = "JWT",
-                    Scheme = "Bearer"
-                });
-                option.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
-                }
-            },
-            new string[]{}
-        }
-    });
-            });
+            ServiceConfig.ConfigureIdentity(builder);
 
-            builder.Services.AddAuthentication(options =>
-            {
+            ServiceConfig.ConfigureAuthorization(builder);
 
-                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(
-                options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                        ValidateAudience = true,
-                        ValidAudience = builder.Configuration["JwtLAudience"],
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]))
-                    };
-                }
-            );
+            ServiceConfig.ConfigureSwaggerGen(builder);
+
+            ServiceConfig.ConfigureAuthentication(builder);
 
             var app = builder.Build();
 
@@ -124,5 +67,9 @@ namespace api.Controllers
 
             app.Run();
         }
+
+        
+
+        
     }
 }
