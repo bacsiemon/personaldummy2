@@ -1,15 +1,37 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Repositories.Entities;
 using Repositories;
-using Microsoft.EntityFrameworkCore;
+using Repositories.Entities;
+using Repositories.UOW;
+using Repositories.UOW.Impl;
+using Services.DepartmentServices;
+using Services.DepartmentServices.Impl;
+using Services.EmployeeServices;
+using Services.EmployeeServices.Impl;
+using Services.JWT;
+using Services.JWT.Impl;
+using Services.UserServices;
+using Services.UserServices.Impl;
 
 namespace api.Controllers
 {
     public static class ServiceConfig
     {
+
+        public static void ConfigureDependencyInjection(WebApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<ITokenService, TokenService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();  
+            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+        }
+
         public static void ConfigureAuthorization(WebApplicationBuilder builder)
         {
             builder.Services.AddAuthorization(options =>
@@ -39,7 +61,7 @@ namespace api.Controllers
                             ValidateIssuer = true,
                             ValidIssuer = builder.Configuration["Jwt:Issuer"],
                             ValidateAudience = true,
-                            ValidAudience = builder.Configuration["JwtLAudience"],
+                            ValidAudience = builder.Configuration["Jwt:Audience"],
                             ValidateIssuerSigningKey = true,
                             IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SigningKey"]))
                         };
@@ -124,6 +146,6 @@ namespace api.Controllers
         {
 
         }
-        
+
     }
 }

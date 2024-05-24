@@ -1,17 +1,15 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repositories.Entities
 {
-    public class AppUser : IdentityUser 
+    public class AppUser : IdentityUser
     {
 
+        public string? RefreshToken { get; set; }
 
+        public DateTime RefreshTokenExpiryDate { get; set; }
+
+        public Employee? Employee { get; set; }
     }
 }

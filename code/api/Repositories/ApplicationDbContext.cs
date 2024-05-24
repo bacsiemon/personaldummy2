@@ -3,11 +3,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Repositories.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repositories
 {
@@ -15,12 +10,12 @@ namespace Repositories
     {
         public ApplicationDbContext()
         {
-            
+
         }
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            
+
         }
 
         private string GetConnectionString()
@@ -34,7 +29,7 @@ namespace Repositories
             return strConn;
         }
 
-       public DbSet<Employee> Employees { get; set; }
+        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
@@ -43,7 +38,24 @@ namespace Repositories
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            ConfigureRelations(builder);
+
             base.OnModelCreating(builder);
+            ConfigureRoles(builder);
+        }
+
+
+        private void ConfigureRelations(ModelBuilder builder)
+        {
+            builder.Entity<Employee>(x => x.HasKey(p => new { p.DepartmentId, p.AppUserId }));
+            builder.Entity<Employee>().HasOne(f => f.AppUser).WithOne(f => f.Employee).HasForeignKey<AppUser>();
+            builder.Entity<Employee>().HasOne(f => f.Department).WithMany(f => f.Employees).HasForeignKey(f => f.Id);
+
+        }
+
+        private void ConfigureRoles(ModelBuilder builder)
+        {
             List<IdentityRole> roles = new()
             {
                 new IdentityRole()
@@ -62,12 +74,11 @@ namespace Repositories
                     Name = "Employee",
                     NormalizedName = "EMPLOYEE"
                 },
-            
+
 
             };
 
             builder.Entity<IdentityRole>().HasData(roles);
         }
-
     }
 }

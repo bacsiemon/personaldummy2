@@ -1,17 +1,3 @@
-
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using Repositories;
-using Repositories.Entities;
-using Services.JWT;
-using Services.JWT.Impl;
-using Services.User;
-using Services.User.Impl;
-
 namespace api.Controllers
 {
     public class Program
@@ -27,9 +13,8 @@ namespace api.Controllers
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-           
-            builder.Services.AddScoped<ITokenService, TokenService>();
-            builder.Services.AddScoped<IUserService, UserService>();
+
+            ServiceConfig.ConfigureDependencyInjection(builder);
 
             // cors
             var MyAllowSpecificOrigins = "api";
@@ -68,8 +53,8 @@ namespace api.Controllers
             app.Run();
         }
 
-        
 
-        
+
+
     }
 }

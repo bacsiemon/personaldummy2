@@ -1,14 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repositories.Entities;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
-using System.Security.Cryptography.Xml;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Services.JWT.Impl
 {
@@ -48,6 +44,44 @@ namespace Services.JWT.Impl
 
             return tokenHandler.WriteToken(token);
 
+        }
+
+
+        public string CreateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        private ClaimsPrincipal GerPrincipalFromExpiredToken(string token)
+        {
+            var jwtSettings = _config.GetSection("Jwt");
+            var tokenValidationParams = new TokenValidationParameters()
+            {
+                ValidateIssuer = true,
+                ValidIssuer = jwtSettings.GetValue<string>("Jwt:Issuer"),
+                ValidateAudience = true,
+                ValidAudience = jwtSettings.GetValue<string>("Jwt:Audience"),
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSettings.GetValue<string>("Jwt:SigningKey")))
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParams, out securityToken);
+
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (jwtSecurityToken == null || jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
     }
 }
