@@ -16,10 +16,9 @@ namespace Repositories.Dtos.AppUserDtos
         public string Password { get; set; }
 
         [StringLength(32)]
-        public string PrivateKey { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty;
 
         public string FullName { get; set; } = string.Empty;
-
 
         public DateTime DateOfBirth { get; set; }
 
@@ -31,6 +30,6 @@ namespace Repositories.Dtos.AppUserDtos
 
         public int Salary { get; set; }
 
-        public string DepartmentName {  get; set; } = string.Empty;
+        public int DepartmenId {  get; set; }
     }
 }

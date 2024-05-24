@@ -9,8 +9,7 @@ using Repositories.UOW;
 using Repositories.UOW.Impl;
 using Services.DepartmentServices;
 using Services.DepartmentServices.Impl;
-using Services.EmployeeServices;
-using Services.EmployeeServices.Impl;
+
 using Services.JWT;
 using Services.JWT.Impl;
 using Services.UserServices;
@@ -26,9 +25,8 @@ namespace api.Controllers
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddTransient<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();  
-            builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
         }
 
@@ -36,15 +34,15 @@ namespace api.Controllers
         {
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("HumanResourceOrHigher", policy => policy.RequireClaim("HumanResource").RequireClaim("SuperUser"));
-                options.AddPolicy("SuperUserOnly", policy => policy.RequireClaim("SuperUser"));
+                options.AddPolicy("HumanResourceClaimOrHigher", policy => policy.RequireClaim("HumanResource").RequireClaim("SuperUser"));
+                options.AddPolicy("SuperUserClaimOnly", policy => policy.RequireClaim("SuperUser"));
             }
             );
 
             builder.Services.AddAuthorization(options =>
             {
-                options.AddPolicy("HumanResourceOrHigher", policy => policy.RequireRole("HumanResource", "SuperUser"));
-                options.AddPolicy("SuperUserOnly", policy => policy.RequireRole("SuperUser"));
+                options.AddPolicy("HumanResourceRoleOrHigher", policy => policy.RequireRole("HumanResource", "SuperUser"));
+                options.AddPolicy("SuperUserRoleOnly", policy => policy.RequireRole("SuperUser"));
             });
         }
 
@@ -71,6 +69,9 @@ namespace api.Controllers
 
         public static void ConfigureSwaggerGen(WebApplicationBuilder builder)
         {
+
+
+
             builder.Services.AddSwaggerGen(option =>
             {
                 option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });

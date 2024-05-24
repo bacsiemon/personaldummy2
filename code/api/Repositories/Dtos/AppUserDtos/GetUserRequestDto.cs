@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Repositories.Dtos.EmployeeDtos
+namespace Repositories.Dtos.AppUserDtos
 {
-    public class GetEmployeeRequestDto
+    public class GetUserRequestDto
     {
-        public int? EmployeeId { get; set; }
+        public int? Id { get; set; }
 
-        public string? EmployeeName { get; set; }
+        public string? FullName { get; set; }
 
         public string? DepartmentName { get; set; }
 

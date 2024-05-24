@@ -13,5 +13,9 @@ namespace Services.DepartmentServices
         CreateDepartmentSvcResponse Create(CreateDepartmentRequestDto requestDto);
 
         GetDepartmentSvcResponse Get(GetDepartmentRequestDto requestDto);
+
+        UpdateDepartmentSvcResponse Update(UpdateDepartmentRequestDto requestDto);
+
+        DeleteDepartmentSvcResponse Delete(DeleteDepartmentRequestDto requestDto);
     }
 }

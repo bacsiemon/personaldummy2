@@ -26,21 +26,21 @@ namespace api.Controllers.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
             try
             {
-                var requestEnt = new RegisterRequestEntity()
-                {
-                    Username = dto.Username,
-                    Email = dto.Email,
-                    Password = dto.Password,
-                    PrivateKey = dto.PrivateKey,
-                };
 
-                RegisterResponseEntity? responseEnt = await _authService.RegisterAsync(requestEnt);
-                return (null == responseEnt.ErrorMessage) ?
-                    Ok(new AuthenticatedUserDto()
+                RegisterResponseEntity? responseEnt = await _authService.RegisterAsync(dto);
+                return (null == responseEnt.Errors) ?
+                    Ok(new RegisterResponseDto()
                     {
                         UserName = responseEnt.UserName,
                         Email = responseEnt.Email,
-                        AccessToken = responseEnt.AccessToken
+                        FullName = responseEnt.FullName,
+                        Role = responseEnt.Role,
+                        DateOfBirth = responseEnt.DateOfBirth,
+                        HomeAddress = responseEnt.HomeAddress,
+                        JobPosition = responseEnt.JobPosition,
+                        Salary = responseEnt.Salary,
+                        AccessToken = responseEnt.AccessToken,
+                        RefreshToken = responseEnt.RefreshToken
                     })
                     :
                     StatusCode(406, responseEnt.Result);
@@ -62,9 +62,9 @@ namespace api.Controllers.Controllers
             if (result.ErrorMessage != null)
                 return Unauthorized(result.ErrorMessage);
 
-            return Ok(new AuthenticatedUserDto()
+            return Ok(new LogInResponseDto()
             {
-                UserName = result.Username,
+                Username = result.Username,
                 Email = result.Email,
                 AccessToken = result.AccessToken,
                 RefreshToken = result.RefreshToken

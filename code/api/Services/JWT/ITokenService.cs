@@ -4,7 +4,7 @@ namespace Services.JWT
 {
     public interface ITokenService
     {
-        string CreateToken(AppUser user);
+        string CreateAccessToken(AppUser user, string role);
 
         string CreateRefreshToken();
     }

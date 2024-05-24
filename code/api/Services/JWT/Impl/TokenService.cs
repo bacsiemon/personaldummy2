@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Repositories.Entities;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -13,19 +15,21 @@ namespace Services.JWT.Impl
         private readonly IConfiguration _config;
         private readonly SymmetricSecurityKey _key;
 
+
         public TokenService(IConfiguration config)
         {
             _config = config;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
         }
 
-        public string CreateToken(AppUser user)
+        public string CreateAccessToken(AppUser user, string role)
         {
             List<Claim> claims = new()
             {
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Role, role)
             };
+
 
             SigningCredentials creds = new(_key, SecurityAlgorithms.HmacSha256Signature);
 
@@ -35,7 +39,7 @@ namespace Services.JWT.Impl
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = creds,
                 Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audience"]
+                Audience = _config["JWT:Audience"],
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -46,7 +50,7 @@ namespace Services.JWT.Impl
 
         }
 
-
+        
         public string CreateRefreshToken()
         {
             var randomNumber = new byte[32];

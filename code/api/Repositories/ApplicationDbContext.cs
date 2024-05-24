@@ -29,7 +29,6 @@ namespace Repositories
             return strConn;
         }
 
-        public DbSet<Employee> Employees { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
@@ -48,10 +47,8 @@ namespace Repositories
 
         private void ConfigureRelations(ModelBuilder builder)
         {
-            builder.Entity<Employee>(x => x.HasKey(p => new { p.DepartmentId, p.AppUserId }));
-            builder.Entity<Employee>().HasOne(f => f.AppUser).WithOne(f => f.Employee).HasForeignKey<AppUser>();
-            builder.Entity<Employee>().HasOne(f => f.Department).WithMany(f => f.Employees).HasForeignKey(f => f.Id);
-
+            builder.Entity<AppUser>(x => x.HasKey(p => new { p.DepartmentId }));
+            builder.Entity<AppUser>().HasOne(f => f.Department).WithMany(f => f.AppUsers).HasPrincipalKey(f => f.Id);
         }
 
         private void ConfigureRoles(ModelBuilder builder)

@@ -1,9 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Services.UserServices.ResponseEntities
+﻿namespace Repositories.Dtos.AppUserDtos
 {
-    public class RegisterResponseEntity
+    public class RegisterResponseDto
     {
+
         public string? Id { get; set; }
         public string? UserName { get; set; }
 
@@ -12,6 +11,7 @@ namespace Services.UserServices.ResponseEntities
         public string FullName { get; set; } = string.Empty;
 
         public string Role { get; set; }
+
         public DateTime DateOfBirth { get; set; }
 
 
@@ -28,8 +28,5 @@ namespace Services.UserServices.ResponseEntities
 
         public string? RefreshToken { get; set; }
 
-        public string? Errors { get; set; }
-
-        public IdentityResult? Result { get; set; }
     }
 }

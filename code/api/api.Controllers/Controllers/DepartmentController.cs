@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.Dtos.DepartmentDtos;
 using Services.DepartmentServices;
@@ -17,6 +18,7 @@ namespace api.Controllers.Controllers
             _deptSvc = deptSvc; 
         }
 
+        
         [HttpPost("create")]
         public  IActionResult Create([FromBody] CreateDepartmentRequestDto requestDto)
         {
@@ -35,7 +37,6 @@ namespace api.Controllers.Controllers
         }
 
         [HttpGet("get")]
-
         public IActionResult Get([FromQuery] GetDepartmentRequestDto requestDto)
         {
             if (!ModelState.IsValid) { return BadRequest(ModelState); }
@@ -51,6 +52,31 @@ namespace api.Controllers.Controllers
                 Description = d.Description,
             });
             return Ok(responseDtos);
+        }
+
+        [HttpPut("update")]
+        public IActionResult Update([FromBody] UpdateDepartmentRequestDto requestDto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            UpdateDepartmentSvcResponse responseEnt = _deptSvc.Update(requestDto);
+
+            if (!string.IsNullOrEmpty(responseEnt.Errors)) 
+                return StatusCode(500, responseEnt.Errors);
+
+            return Ok(responseEnt.DepartmentResponseDto);
+        }
+
+        [HttpDelete("delete")]
+        public IActionResult Delete([FromBody] DeleteDepartmentRequestDto requestDto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            DeleteDepartmentSvcResponse responseEnt = _deptSvc.Delete(requestDto);
+
+            if (!string.IsNullOrEmpty(responseEnt.Errors)) return StatusCode(500,responseEnt.Errors);
+
+            return NoContent();
         }
     }
 }

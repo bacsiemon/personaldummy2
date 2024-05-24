@@ -12,7 +12,7 @@ using Repositories;
 namespace Repositories.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240523102719_init")]
+    [Migration("20240524115609_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -54,19 +54,19 @@ namespace Repositories.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5be21acd-d2d5-4286-9d72-6654362110bf",
+                            Id = "43890b93-0c8e-4fb1-afbd-9432c8566932",
                             Name = "SuperUser",
                             NormalizedName = "SUPERUSER"
                         },
                         new
                         {
-                            Id = "7c495f1b-bc10-4549-a607-db018e28d42c",
+                            Id = "09fa2395-7840-4b50-828a-935e7783e384",
                             Name = "HumanResource",
                             NormalizedName = "HUMANRESOURCE"
                         },
                         new
                         {
-                            Id = "ed0f67b3-2d34-4d9f-958a-5bfe6c4e99da",
+                            Id = "ba8de980-c7cb-4b0b-b889-3bdf13845b85",
                             Name = "Employee",
                             NormalizedName = "EMPLOYEE"
                         });
@@ -190,6 +190,12 @@ namespace Repositories.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DepartmentId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -197,11 +203,17 @@ namespace Repositories.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("EmployeeAppUserId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("EmployeeDepartmentId")
-                        .HasColumnType("int");
+                    b.Property<string>("HomeAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JobPosition")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -229,8 +241,11 @@ namespace Repositories.Migrations
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("RefreshTokenExpiryDate")
+                    b.Property<DateTime?>("RefreshTokenExpiryDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Salary")
+                        .HasColumnType("int");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -244,6 +259,8 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -251,10 +268,6 @@ namespace Repositories.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.HasIndex("EmployeeDepartmentId", "EmployeeAppUserId")
-                        .IsUnique()
-                        .HasFilter("[EmployeeDepartmentId] IS NOT NULL AND [EmployeeAppUserId] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -268,52 +281,14 @@ namespace Repositories.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("DepartmentName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Department");
-                });
-
-            modelBuilder.Entity("Repositories.Entities.Employee", b =>
-                {
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("AppUserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("HomeAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("JobPosition")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Salary")
-                        .HasColumnType("int");
-
-                    b.HasKey("DepartmentId", "AppUserId");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -369,18 +344,9 @@ namespace Repositories.Migrations
 
             modelBuilder.Entity("Repositories.Entities.AppUser", b =>
                 {
-                    b.HasOne("Repositories.Entities.Employee", "Employee")
-                        .WithOne("AppUser")
-                        .HasForeignKey("Repositories.Entities.AppUser", "EmployeeDepartmentId", "EmployeeAppUserId");
-
-                    b.Navigation("Employee");
-                });
-
-            modelBuilder.Entity("Repositories.Entities.Employee", b =>
-                {
                     b.HasOne("Repositories.Entities.Department", "Department")
-                        .WithMany("Employees")
-                        .HasForeignKey("Id")
+                        .WithMany("AppUsers")
+                        .HasForeignKey("DepartmentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -389,12 +355,7 @@ namespace Repositories.Migrations
 
             modelBuilder.Entity("Repositories.Entities.Department", b =>
                 {
-                    b.Navigation("Employees");
-                });
-
-            modelBuilder.Entity("Repositories.Entities.Employee", b =>
-                {
-                    b.Navigation("AppUser");
+                    b.Navigation("AppUsers");
                 });
 #pragma warning restore 612, 618
         }

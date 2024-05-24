@@ -1,0 +1,52 @@
+{
+  "username": "superuser1",
+  "email": "superuser1@example.com",
+  "password": "string1",
+  "role": "SU",
+  "fullName": "SuperUser 1",
+  "dateOfBirth": "1990-01-01T12:34:38.921Z",
+  "homeAddress": "123 Wall Street, New York, USA",
+  "jobPosition": "SuperUser",
+  "salary": 150000,
+  "departmenId": 1
+}
+
+{
+  "username": "HumanResource1",
+  "email": "humanresource1@example.com",
+  "password": "string1",
+  "role": "SU",
+  "fullName": "SuperUser 1",
+  "dateOfBirth": "2000-11-01",
+  "homeAddress": "671 Kingsford Terrace, San Francisco, USA",
+  "jobPosition": "Manager",
+  "salary": 100000,
+  "departmenId": 1
+}
+
+
+{
+  "username": "employee1",
+  "email": "employee1@example.com",
+  "password": "string2",
+  "role": "EM",
+  "fullName": "Employee 1",
+  "dateOfBirth": "1990-01-02",
+  "homeAddress": "79272 Delaware Pass, California, USA",
+  "jobPosition": "Project Manager",
+  "salary": 80000,
+  "departmenId": 2
+}
+
+{
+  "username": "employee2",
+  "email": "employee2@example.com",
+  "password": "string2",
+  "role": "EM",
+  "fullName": "Employee 2",
+  "dateOfBirth": "1990-01-03",
+  "homeAddress": "4807 Anniversary Court, London, UK",
+  "jobPosition": "Developer",
+  "salary": 80000,
+  "departmenId": 3
+}

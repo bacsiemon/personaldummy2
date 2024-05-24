@@ -1,4 +1,5 @@
-﻿using Services.UserServices.RequestEntities;
+﻿using Repositories.Dtos.AppUserDtos;
+using Services.UserServices.RequestEntities;
 using Services.UserServices.ResponseEntities;
 
 namespace Services.UserServices
@@ -7,6 +8,6 @@ namespace Services.UserServices
     {
         Task<LoginResponseEntity?> LoginAsync(string username, string password);
 
-        Task<RegisterResponseEntity?> RegisterAsync(RegisterRequestEntity requestEnt);
+        Task<RegisterResponseEntity?> RegisterAsync(RegisterDto requestDto);
     }
 }

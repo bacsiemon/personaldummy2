@@ -33,8 +33,8 @@ namespace Repositories.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DepartmentName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    DepartmentName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -63,38 +63,18 @@ namespace Repositories.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    DepartmentId = table.Column<int>(type: "int", nullable: false),
-                    AppUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    HomeAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    JobPosition = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Salary = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => new { x.DepartmentId, x.AppUserId });
-                    table.ForeignKey(
-                        name: "FK_Employees_Department_Id",
-                        column: x => x.Id,
-                        principalTable: "Department",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RefreshToken = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RefreshTokenExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EmployeeDepartmentId = table.Column<int>(type: "int", nullable: true),
-                    EmployeeAppUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    RefreshTokenExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    HomeAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    JobPosition = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Salary = table.Column<int>(type: "int", nullable: false),
+                    DepartmentId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -114,10 +94,11 @@ namespace Repositories.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Employees_EmployeeDepartmentId_EmployeeAppUserId",
-                        columns: x => new { x.EmployeeDepartmentId, x.EmployeeAppUserId },
-                        principalTable: "Employees",
-                        principalColumns: new[] { "DepartmentId", "AppUserId" });
+                        name: "FK_AspNetUsers_Department_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Department",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -210,9 +191,9 @@ namespace Repositories.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "5be21acd-d2d5-4286-9d72-6654362110bf", null, "SuperUser", "SUPERUSER" },
-                    { "7c495f1b-bc10-4549-a607-db018e28d42c", null, "HumanResource", "HUMANRESOURCE" },
-                    { "ed0f67b3-2d34-4d9f-958a-5bfe6c4e99da", null, "Employee", "EMPLOYEE" }
+                    { "09fa2395-7840-4b50-828a-935e7783e384", null, "HumanResource", "HUMANRESOURCE" },
+                    { "43890b93-0c8e-4fb1-afbd-9432c8566932", null, "SuperUser", "SUPERUSER" },
+                    { "ba8de980-c7cb-4b0b-b889-3bdf13845b85", null, "Employee", "EMPLOYEE" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -248,11 +229,9 @@ namespace Repositories.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_EmployeeDepartmentId_EmployeeAppUserId",
+                name: "IX_AspNetUsers_DepartmentId",
                 table: "AspNetUsers",
-                columns: new[] { "EmployeeDepartmentId", "EmployeeAppUserId" },
-                unique: true,
-                filter: "[EmployeeDepartmentId] IS NOT NULL AND [EmployeeAppUserId] IS NOT NULL");
+                column: "DepartmentId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -260,11 +239,6 @@ namespace Repositories.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Employees_Id",
-                table: "Employees",
-                column: "Id");
         }
 
         /// <inheritdoc />
@@ -290,9 +264,6 @@ namespace Repositories.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "Employees");
 
             migrationBuilder.DropTable(
                 name: "Department");
